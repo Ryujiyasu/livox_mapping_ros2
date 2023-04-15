@@ -43,15 +43,21 @@ set(DEPENDENCIES
 
 set(EXECUTABLE_NAME "loam_scanRegistration")
 
-add_executable(${EXECUTABLE_NAME} src/main.cpp)
+add_executable(${EXECUTABLE_NAME} src/scanRegistration.cpp)
 target_link_libraries(${EXECUTABLE_NAME} ${PCL_LIBRARIES} ${OpenCV_LIBS})
 ament_target_dependencies(${EXECUTABLE_NAME} ${DEPENDENCIES})
+
+set(EXECUTABLE_NAME2 "loam_laserMapping")
+
+add_executable(${EXECUTABLE_NAME2} src/laserMapping.cpp)
+target_link_libraries(${EXECUTABLE_NAME2} ${PCL_LIBRARIES} ${OpenCV_LIBS})
+ament_target_dependencies(${EXECUTABLE_NAME2} ${DEPENDENCIES})
 
 ################################################################################
 # Install
 ################################################################################
 
-install(TARGETS ${EXECUTABLE_NAME}
+install(TARGETS ${EXECUTABLE_NAME} ${EXECUTABLE_NAME2}
   DESTINATION lib/${PROJECT_NAME}
 )
 
