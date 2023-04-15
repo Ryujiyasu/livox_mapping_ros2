@@ -22,7 +22,6 @@ rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pubCornerPointsSharp
 rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pubSurfPointsFlat;
 rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pubLaserCloud_temp;
 
-
 std::vector<sensor_msgs::msg::PointCloud2::SharedPtr> msg_window;
 cv::Mat matA1(3, 3, CV_32F, cv::Scalar::all(0));
 cv::Mat matD1(1, 3, CV_32F, cv::Scalar::all(0));
@@ -86,6 +85,7 @@ bool plane_judge(const std::vector<PointType>& point_list,const int plane_thresh
     return false;
   }
 }
+
 void laserCloudHandler_temp(const sensor_msgs::msg::PointCloud2::SharedPtr& laserCloudMsg) //for hkmars data
 {
 
@@ -110,6 +110,8 @@ void laserCloudHandler_temp(const sensor_msgs::msg::PointCloud2::SharedPtr& lase
   laserCloudOutMsg.header.frame_id = "/livox";
   pubLaserCloud_temp->publish(std::move(laserCloudOutMsg));
 }
+
+
 void laserCloudHandler(const sensor_msgs::msg::PointCloud2::SharedPtr laserCloudMsg)
 {
   pcl::PointCloud<PointType> laserCloudIn;
@@ -485,20 +487,18 @@ void laserCloudHandler(const sensor_msgs::msg::PointCloud2::SharedPtr laserCloud
   pcl::toROSMsg(surfPointsFlat, surfPointsFlat2);
   surfPointsFlat2.header.stamp = laserCloudMsg->header.stamp;
   surfPointsFlat2.header.frame_id = "/livox";
-  pubLaserCloud->publish(std::move(surfPointsFlat2));
-
+  pubSurfPointsFlat->publish(std::move(surfPointsFlat2));
 }
 
-
-int main(int argc, char ** argv){
-    rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("my_node");
-    pubLaserCloud = node->create_publisher<sensor_msgs::msg::PointCloud2>("livox_cloud", rclcpp::QoS(20));
-    // pubCornerPointsSharp = node->create_publisher<sensor_msgs::msg::PointCloud2>("laser_cloud_sharp", rclcpp::QoS(20));
-    // pubSurfPointsFlat = node->create_publisher<sensor_msgs::msg::PointCloud2>("laser_cloud_flat", rclcpp::QoS(20));
-    // auto sub = node->create_subscription<sensor_msgs::msg::PointCloud2>("livox/lidar", 100, laserCloudHandler);
-    
-
-    rclcpp::shutdown();
-    return 0;
+int main(int argc, char **argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared<rclcpp::Node>("subscriber_node");
+  pubLaserCloud = node->create_publisher<sensor_msgs::msg::PointCloud2>("livox_cloud", rclcpp::QoS(20));
+  pubCornerPointsSharp = node->create_publisher<sensor_msgs::msg::PointCloud2>("laser_cloud_sharp", rclcpp::QoS(20));
+  pubSurfPointsFlat = node->create_publisher<sensor_msgs::msg::PointCloud2>("laser_cloud_flat", rclcpp::QoS(20));
+  auto subscription = node->create_subscription<sensor_msgs::msg::PointCloud2>("livox/lidar", 100, laserCloudHandler);
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
 }
