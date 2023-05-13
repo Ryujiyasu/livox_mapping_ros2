@@ -15,7 +15,7 @@ find_package(std_msgs)
 find_package(pcl_ros)
 find_package(tf2)
 find_package(tf2_ros)
-find_package(livox_ros2_driver)
+find_package(livox_ros_driver2)
 find_package(Eigen3 REQUIRED)
 find_package(PCL REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -38,7 +38,7 @@ set(DEPENDENCIES
   "pcl_ros"
   "tf2"
   "tf2_ros"
-  "livox_ros2_driver"
+  "livox_ros_driver2"
 )
 
 set(EXECUTABLE_NAME "loam_scanRegistration")
@@ -53,11 +53,25 @@ add_executable(${EXECUTABLE_NAME2} src/laserMapping.cpp)
 target_link_libraries(${EXECUTABLE_NAME2} ${PCL_LIBRARIES} ${OpenCV_LIBS})
 ament_target_dependencies(${EXECUTABLE_NAME2} ${DEPENDENCIES})
 
+set(EXECUTABLE_NAME3 "livox_repub")
+
+add_executable(${EXECUTABLE_NAME3} src/livox_repub.cpp)
+target_link_libraries(${EXECUTABLE_NAME3} ${PCL_LIBRARIES} ${OpenCV_LIBS})
+ament_target_dependencies(${EXECUTABLE_NAME3} ${DEPENDENCIES})
+
+
+set(EXECUTABLE_NAME4 "loam_scanRegistration_horizon")
+
+add_executable(${EXECUTABLE_NAME4} src/scanRegistration_horizon.cpp)
+target_link_libraries(${EXECUTABLE_NAME4} ${PCL_LIBRARIES} ${OpenCV_LIBS})
+ament_target_dependencies(${EXECUTABLE_NAME4} ${DEPENDENCIES})
+
+
 ################################################################################
 # Install
 ################################################################################
 
-install(TARGETS ${EXECUTABLE_NAME} ${EXECUTABLE_NAME2}
+install(TARGETS ${EXECUTABLE_NAME} ${EXECUTABLE_NAME2} ${EXECUTABLE_NAME3} ${EXECUTABLE_NAME4}
   DESTINATION lib/${PROJECT_NAME}
 )
 
